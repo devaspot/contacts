@@ -1,0 +1,160 @@
+
+    Synrc Contacts
+    ----------------------------------------
+    Copyright (c) 2009 Synrc Research Center
+    
+    
+                        ========================================
+                            SYNRC SYNC REPLICATION PROTOCOL     
+                        ========================================
+    
+                                Maxim Sokhatsky - maxim@synrc.com
+                                                    Version 1.0
+
+    
+
+    
+    Overview
+    ========
+
+    Sync Engine synchronize only two sync sources at a time.
+    Contacts are updated (rewrited) only if has been changed out of house.
+    All modified out of house contacts are merged and replicated to other sync sources.
+    Contacts that modified in-house are always merged.
+    After every sync session full copy of two sync sources are backuped.
+    
+    1. Adding new Contacts
+    ======================
+
+    Quite simple. Just add the contacts that are absent in opposite
+    sync source of sync.
+    
+    
+    2. Removing Contacts
+    ====================
+
+    Removing is only possible from in-house. I.e. that if you delete
+    contact in GMAIL it never been replicated as deleted to other sources.
+    Only if you delete it with Synrc Contacts it will be replicated as
+    deleted to other sources and saved to internal Trash folders marked as deleted.
+
+    
+    3. Handle Conflicts
+    ===================
+
+    If contact is present (identified by ID or Name) in two sync sources that are
+    being synchronized the conflict occurs. This paragraph describe the resolution of
+    this conflict.
+
+    Legend.
+
+    Flags:
+    ------
+
+    C       - clear, has no midification since last sync (LastSync > Last Modified)
+    D       - dirty, has modified since last sync (LastModified > LastSync)
+    []      - Labels empty
+    [ow]    - contact in last sync session is marked as synchronized with
+              Outlook and Windows Contacts
+
+    Operations:
+    -----------
+
+    n       - do nothing
+    u       - updating by rewrite
+    s       - source for updating
+    m       - updating by merge
+
+                        Hints:
+
+                        1.  Only two "m" can be per row.
+                            That indicated wat sync source are being merge.
+                        2.  In each row only one pair of "u" and "s" can be.
+                            I.e. that one sync source updates another.
+
+    Sync Sources:
+    -------------
+
+    O       - Outlook
+    W       - Windows Contacts
+    G       - GMAIL
+    Y       - Yahoo!
+
+    Sync Sessions:
+    --------------
+
+    W-Y     - Sync Session between Windows Contacts and Yahoo!
+
+    Examples.
+
+
+    1.
+            O           W           G           
+          +-----------+-----------+-----------+
+          | []C       | []C       | []C       | 
+    W-G   | []C       | [wg]mC    | [wg]mC    | 
+    W-G   | []C       | [wg]C     | [wg]C     | 
+    O-G   | [owgf]mC  | [owf]C    | [owgf]mC  | 
+    G-Y   | [owgf]C   | [owf]C    | [owgf]mC  | 
+          +-----------+-----------+-----------+
+
+          This exmaple demonstrates three sources. All conflicted
+          contacts are marked as not being synchronized with each other.
+          In that case all of them are have to be merged.
+
+    2.
+            O           W           G           Y
+          +-----------+-----------+-----------+-----------+
+          | D         | [owgf]C   | D         | D         |
+    W-Y   | D         | [wf]uC    | D         | [wf]sC    |
+    O-W   | [owf]mC   | [owf]mC   | D         | [wf]C     |
+    O-G   | [owgf]mC  | [owf]C    | [owgf]mC  | [wf]C     |
+    G-Y   | [owgf]C   | [owf]C    | [owgf]mC  | [owgf]mC  |
+          +-----------+-----------+-----------+-----------+
+
+          In this example three dirty contacts from Outlook, GMAIL and Yahho!
+          after set of sessions are merged with each other and Windows Contact
+          is updated with this
+
+    3.
+            O           W           G           
+          +-----------+-----------+-----------+
+          | []D       | [owg]C    | []D       | 
+    W-G   | []D       | [wg]uC    | [wg]sC    | 
+    W-O   | [owg]mC   | [owg]mC   | [wg]C     | 
+    W-G   | [owg]C    | [owg]mC   | [owg]mC   | 
+          +-----------+-----------+-----------+
+          In this example Windows Contacts contact was marked synchronized
+          with any so it is updated with merged data from Outlook and Google.
+
+    4.
+            O           W           G           
+          +-----------+-----------+-----------+
+          | []D       | []C       | []D       | 
+    W-G   | []D       | [wg]mC    | [wg]mC    | 
+    W-O   | [owg]mC   | [owg]mC   | [wg]C     | 
+    W-G   | [owg]C    | [owg]mC   | [owg]mC   | 
+          +-----------+-----------+-----------+
+          In this example Windows Contacts contact are not synchronized with any
+          from start. So it had to be merged.
+
+
+    Replication Algebra
+    ===================
+    
+    local contact's flags + remote contact' flags = operation (condition)
+    ---------------------------------------------------------------------
+    C + C = n (sync labels is identical)
+    C + C = m (sync labels are not identical)
+    D + C = u (cleared contact is replicated to dirty)
+    D + C = m (cleared contact is NOT replicated to dirty)
+	D + D = m (always)
+
+	This algorithm is implemented in SyncTask() method of SyncEngine.
+
+
+	Links:
+
+	[1] Introduction to the Microsoft Sync Framework Runtime
+		http://msdn.microsoft.com/en-us/sync/bb821992.aspx
+

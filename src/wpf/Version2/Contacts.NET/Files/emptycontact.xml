@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c:contact c:Version="1"
+    xmlns:c="http://schemas.microsoft.com/Contact"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <c:Extended xsi:nil="true"/>
+  <c:CreationDate>2000-01-01T00:00:00Z</c:CreationDate>
+  <c:ContactIDCollection>
+    <c:ContactID c:ElementID="00000000-0000-0000-0000-000000000000">
+      <c:Value>00000000-0000-0000-0000-000000000000</c:Value>
+    </c:ContactID>
+  </c:ContactIDCollection>
+</c:contact>
+

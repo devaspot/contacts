@@ -1,0 +1,61 @@
+
+	Synrc Contacts
+	----------------------------------------
+	Copyright (c) 2009 Synrc Research Center
+    
+	
+						========================================
+						  SYNRC SYNC MULTITHREDED ARCHITECTURE		
+						========================================
+	
+								Maxim Sokhatsky - maxim@synrc.com
+													Version 1.0
+
+
+	Multithreaded Engine
+	====================
+
+	Retrieving, syncing, managing, storing and saving contacts from sync
+	sources divided into 6 threads that are controlled by set of semaphores.
+	This brings application smoth and responsivness. 
+
+	1. Fetch contacts from local source (parallel)
+	2. Fetch contacts from remote source (parallel)
+	3. Sync when all sources are fetched
+	4. Update local sync source (parallel)
+	5 .Update remote sync source (parallel)
+	6. Storing Last Sync of sync sources (in dedicated thread)
+	7. and of course 7-th GUI Thread.
+
+	
+	GUI THREAD 0
+
+	  +-------------+   +-------------+
+	  |	FetchTask() |	| FetchTask() |			PARRALEL
+	  |	THREAD 1	|	| THREAD 2    |
+	  +-------------+   +-------------+
+
+  			   +-------------+
+	  		   | SyncTask()  |                
+	  		   |  THREAD 3   |
+	  		   +-------------+
+
+	  +--------------+ +--------------+
+	  |	UpdateTask() | | UpdateTask() |			PARRALEL
+	  |	THREAD 4	 | | THREAD 5     |
+	  +--------------+ +----------- --+
+
+  			   +-------------+
+	  		   | SaveTask1() |                
+	  		   | SaveTask2() |
+	  		   |  THREAD 6   |
+	  		   +-------------+
+
+	API
+	===
+
+	RETURN FUTURE UPDATABLE, LISTVIEW BINDABLE LIST
+
+	IList<IMan> contacts = Sync(ISyncSource local, ISyncSource remote);
+
+    

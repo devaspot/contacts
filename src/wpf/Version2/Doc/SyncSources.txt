@@ -1,0 +1,113 @@
+
+
+    Synrc Contacts
+    ----------------------------------------
+    Copyright (c) 2009 Synrc Research Center
+    
+    
+                        ========================================
+                            SYNRC SYNC SYNC SOURCE INTERFACE     
+                        ========================================
+    
+                                Maxim Sokhatsky - maxim@synrc.com
+                                                    Version 1.0
+
+	Sync Sources
+	============
+
+
+	Synrc Contacts is available to public community Sync engine.
+	Focused on synchronization of contact Information from different
+	sync sources: Windows Contacts, Outlook, NOKIA Phones, GMAIL.
+	It supports multithreaded contacts loading and updating from/to sync sources.
+
+		o	Windows Contacts
+		o	Windows Live Contacts
+		o	Outlook PIM
+		o	GMAIL
+		o	Yahoo! Contacts
+		o	PeopleSync
+		o	LDAP
+		o	Plaxo
+		o	NOKIA
+		o	Bluetooth OBEX Push Profile vCARD Transfer
+
+	
+	API Interfaces
+	==============
+
+	public interface ISyncSource
+	{
+		//
+		// "GivenMiddleFamily or FamilyGivenMiddle sync source."
+		//
+		NameNotation Notation { get; set; } 
+
+		//
+		// "E.g. 'Nokia E71', 'Gmail'"
+		//
+		string Name { get; set; } 
+
+		//
+		// "Serial Number of the device, account name, etc."
+		//
+		string Id { get; set; } 
+
+		//
+		// "For on-line sync sources."
+		//
+		bool NeedAuthorization { get; } 
+
+		//
+		// "For On-Line providers."
+		//
+		NetworkCredential Credentials { get; set; } 
+
+		//
+		// "If to remember login and password."
+		//
+		bool ClearCredentials { get; set; } 
+
+		//
+		// "This sync source provider is read-only."
+		//
+		bool ReadOnly { get; set; } 
+
+		//
+		// "Main RETRIVAL Task executed in dedicated thread."
+		//
+		void FetchTask(); 
+
+		//
+		// "Main UPDATER Task executed in dedicated thread."
+		//
+		void UpdateTask(); 
+
+		//
+		// "Simplified (reduced fields) list for FAST ListView binding."
+		//
+		IList<IMan> Mans { get; } 
+
+		//
+		// "Actual contacts in sync session."
+		//
+		IDictionary<string, Contact> Contacts { get; } 
+
+		//
+		// "Contacts needed to be updated."
+		//
+		IDictionary<string, Contact> MapAdded { get; set; }
+		IDictionary<string, Contact> MapUpdated { get; set; }
+		IDictionary<string, Contact> MapRemoved { get; set; }
+
+		//
+		// "Public semaphore objects hoocked by Sync Engine."
+		// "Implemented in base class."
+		//
+		Semaphore FetchSem { get; }
+		Semaphore UpdateSem { get; }
+		Semaphore SyncSem { set; }
+	}
+
+
+   

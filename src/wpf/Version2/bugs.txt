@@ -1,0 +1,4 @@
+
+
+	1. Emails from Windows Live are duplicated. not added email if it is already as LiveID.
+	

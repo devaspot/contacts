@@ -1,0 +1,54 @@
+
+	Synrc Contacts
+	----------------------------------------
+	Copyright (c) 2009 Synrc Research Center
+    
+	
+						========================================
+							     SYNRC SYNC NAME RESOLVING		
+						========================================
+	
+								Maxim Sokhatsky - maxim@synrc.com
+													Version 1.0
+
+     
+
+	
+	Names Notation and Name Inconsistance Resolution
+	================================================
+
+	To simplify contact managing application supports Two Main
+	NameNotations: Formal Notation and Human Notation.
+
+	Here is possible name values for Formal Notation:
+	
+		- Last First Middle
+		- Last First
+		- First
+
+	And for Human Notation:
+	
+		- First Middle Last
+		- First Middle
+		- First
+	
+	This notation are used to identify contacts in conflict resolution
+	in different sources, where Ids comparing are impossible.
+
+	Full Name is just a current view of name information save in given
+	profile. It is cached calculated value of function of three
+	arguments: First Middle and Last name. If FullName is not specified it is
+	calculated from these three fields. If sync source (e.g. GMAIL) does not
+	support granural name fields but only FullName then name fields are generated
+	with following rules: Full name divides into word pars, and these word
+	are placed in approriative positin within profile notation.
+
+	Example of contact fetched in profile with Formal Notation:
+
+	"Turing Alan Mathison" -> Last First Middle
+	"Turing Alan" -> Last First
+	"Alan Mathison" -> Last First (seems like his father's name)
+
+	All singleword names are placed in FirstName, e.g. "Gerge", "Peter", "Taxi".
+
+  

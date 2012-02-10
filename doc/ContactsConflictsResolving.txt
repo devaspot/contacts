@@ -1,0 +1,38 @@
+
+	Synrc Contacts
+	----------------------------------------
+	Copyright (c) 2009 Synrc Research Center
+    
+	
+						========================================
+							     SYNRC SYNC ITEM CONFLICTS		
+						========================================
+	
+								Maxim Sokhatsky - maxim@synrc.com
+													Version 1.0
+
+
+
+
+
+	Contact Conflicts Resolving
+	===========================
+
+	All contacts are identified by its Id in its container sync source
+	but in all scope of contacts they are determined by its FullName in
+	any given Name Notation. The sync process starts and fetches two lists
+	of contacts from two sources. Then we have core sources that are presented
+	as in local as in remote source and tails sets that are presented
+	only in its sync sources. That core set is a conflict set. Tails just
+	added from one to another.
+
+	There are 3 possible event for managing two equals contacts
+	
+		o	contacts are equals and no need to be updated
+
+		o	one contact in newer that another, and another
+			didn't changed since last sync. Then delete old
+			contact and create new one from newer
+
+		o	two contacts was modified since last sync,
+			then merge them and update both sources

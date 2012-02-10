@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright Microsoft Corporation. All Rights Reserved. -->
+
+<xs:schema
+           xmlns:xs=       "http://www.w3.org/2001/XMLSchema"
+           xmlns:ext=      "http://schemas.microsoft.com/Contact/Extended"
+
+           xmlns:tns=      "http://schemas.microsoft.com/Contact"
+           targetNamespace="http://schemas.microsoft.com/Contact"
+
+           elementFormDefault=    "qualified"
+           attributeFormDefault=  "qualified"
+           version="1.0">
+
+    <!-- *****************************************-->
+    <!-- attribute type definitions -->
+    <!-- *****************************************-->
+
+<!-- TODO: figure out how to restrict nodes with Version to always have ModificationDate -->
+
+    <!-- tns:contactAttributes is the standard group of attributes allowed on tns elements
+                    including any attribute from other namespaces -->
+    <xs:attributeGroup name="contactAttributes">
+        <xs:attribute name="Version"          type="xs:positiveInteger" default="1"/>
+        <xs:attribute name="ModificationDate" type="xs:dateTime"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+    </xs:attributeGroup>
+
+    <!-- tns:entryAttributes are attributes present on individual multi value property entries
+                and with an ElementID attribute
+                and with contactAttributes  -->
+    <xs:attributeGroup name="entryAttributes">
+        <xs:attribute name="ElementID" type="tns:GUID" use="required"/>
+        <xs:attribute name="type" type="xs:string" fixed="arrayNode"/>
+        <xs:attributeGroup ref="tns:contactAttributes"/>
+    </xs:attributeGroup>
+
+    <!-- tns:arrayElementAttributes are attributes present in DOM on container elements
+                of multi value property entries -->
+    <xs:attributeGroup name="arrayElementAttributes">
+        <xs:attribute name="type" type="xs:string" fixed="arrayElement"/>
+        <xs:attributeGroup ref="tns:contactAttributes"/>
+    </xs:attributeGroup>
+
+    <!-- *****************************************-->
+    <!-- complex type definitions -->
+    <!-- *****************************************-->
+
+    <!-- tns:string is a standand string
+               with contactAttributes allowed -->
+    <xs:complexType name="string">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="type" type="xs:string" fixed="string"/>
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:binary is a base64Binary
+               which must have a MIME content type attribute
+               content is interpreted as base64 encoded binary data
+               with contactAttributes allowed -->
+    <xs:complexType name="binary">
+        <xs:simpleContent>
+            <xs:extension base="xs:base64Binary">
+                <xs:attribute name="ContentType" type="xs:string" use="required"/>
+                <xs:attribute name="type" type="xs:string" fixed="binary"/>
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:dateTime is a standand dateTime
+               with contactAttributes allowed -->
+    <xs:complexType name="dateTime">
+        <xs:simpleContent>
+            <xs:extension base="xs:dateTime">
+                <xs:attribute name="type" type="xs:string" fixed="dateTime"/>
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:GUID is a GUID
+               represented as a string, without the surrounding {} -->
+    <xs:simpleType name="GUID">
+        <xs:restriction base="xs:string">
+            <!-- regexp language primer:
+                 [0-9A-Fa-f] == one character from the ranges, inclusive (hex)
+                 {8} == repeated 8 times
+                 \-  == the dash character, not part of regexp -->
+            <xs:pattern value="[0-9A-Fa-f]{8}\-[0-9A-Fa-f]{4}\-[0-9A-Fa-f]{4}\-[0-9A-Fa-f]{4}\-[0-9A-Fa-f]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- tns:valueGUID is a tns:GUID
+               with contactAttributes allowed -->
+    <xs:complexType name="valueGUID">
+        <xs:simpleContent>
+            <xs:extension base="tns:GUID">
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:anyURI is an xs:anyURI
+                with a minimum length of 1 -->
+    <xs:simpleType name="anyURI">
+        <xs:restriction base="xs:anyURI">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- tns:uri is a tns:anyURI
+               with contactAttributes allowed -->
+    <xs:complexType name="uri">
+        <xs:simpleContent>
+            <xs:extension base="tns:anyURI">
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:gender is a tns:string
+                with value of Male, Female or Unspecified -->
+    <xs:complexType name="gender">
+        <xs:simpleContent>
+            <xs:restriction base="tns:string">
+                <xs:enumeration value="Male"/>
+                <xs:enumeration value="Female"/>
+                <xs:enumeration value="Unspecified"/>
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:labelUnion is the union of a string
+                with value of (Preferred, Personal, Business, Mobile, Pager, Fax)
+                or a uri -->
+    <xs:simpleType name="labelUnion">
+        <xs:union memberTypes="tns:anyURI">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="1"/>
+
+                    <!-- labels for all Collections -->
+                    <xs:enumeration value="Preferred"/>
+                    <xs:enumeration value="Personal"/>
+                    <xs:enumeration value="Business"/>
+
+                    <!-- labels for PhoneNumber -->
+                    <xs:enumeration value="Voice"/>
+                    <xs:enumeration value="Mobile"/>
+                    <xs:enumeration value="Cellular"/>
+                    <xs:enumeration value="PCS"/>
+                    <xs:enumeration value="Pager"/>
+                    <xs:enumeration value="TTY"/>
+                    <xs:enumeration value="Fax"/>
+                    <xs:enumeration value="Video"/>
+                    <xs:enumeration value="Modem"/>
+                    <xs:enumeration value="BBS"/>
+                    <xs:enumeration value="Car"/>
+                    <xs:enumeration value="ISDN"/>
+
+                    <!-- labels for Person -->
+                    <xs:enumeration value="Agent"/>
+
+                    <!-- labels for PhysicalAddress -->
+                    <xs:enumeration value="Domestic"/>
+                    <xs:enumeration value="International"/>
+                    <xs:enumeration value="Postal"/>
+                    <xs:enumeration value="Parcel"/>
+
+                    <!-- labels for Photo -->
+                    <xs:enumeration value="UserTile"/>
+                    <xs:enumeration value="Logo"/>
+
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <!-- tns:label is a labelUnion, with contactAttributes -->
+    <xs:complexType name="Label">
+        <xs:simpleContent>
+            <xs:extension base="tns:labelUnion">
+                <xs:attributeGroup ref="tns:contactAttributes"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- tns:LabelCollection is a sequence of Label elements -->
+    <xs:complexType name="LabelCollection">
+        <xs:sequence>
+            <xs:element name="Label" type="tns:Label" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- tns:Extended is any elements from other namespaces
+                including simpleExtension namespaces -->
+    <xs:complexType name="Extended">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="skip"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- tns:EmailAddress is one email address
+                with optional type information (e.g. SMTP)
+                and labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="EmailAddress">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Address"         type="tns:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Type"            type="tns:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:EmailAddressCollection is a sequence of EmailAddress entries -->
+    <xs:complexType name="EmailAddressCollection">
+        <xs:sequence>
+            <xs:element name="EmailAddress" type="tns:EmailAddress" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:Person is one person element
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Person">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="FormattedName"    type="tns:string"       minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="PersonID"         type="tns:string"       minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PersonCollection is a sequence of Person entries -->
+    <xs:complexType name="PersonCollection">
+        <xs:sequence>
+            <xs:element name="Person" type="tns:Person" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+    <!-- tns:Photo is one Photo element
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Photo">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Value"           type="tns:binary"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Url"             type="tns:uri"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PhotoCollection is a sequence of Photo entries -->
+    <xs:complexType name="PhotoCollection">
+        <xs:sequence>
+            <xs:element name="Photo" type="tns:Photo" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:Date is one date element
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Date">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Value"           type="tns:dateTime" minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:DateCollection is a sequence of Date entries -->
+    <xs:complexType name="DateCollection">
+        <xs:sequence>
+            <xs:element name="Date" type="tns:Date" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PhysicalAddress is one address
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="PhysicalAddress">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="AddressLabel"    type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Street"          type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Locality"        type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Region"          type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="PostalCode"      type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Country"         type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="POBox"           type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="ExtendedAddress" type="tns:string"   minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PhysicalAddressCollection is a sequence of PhysicalAddress entries -->
+    <xs:complexType name="PhysicalAddressCollection">
+        <xs:sequence>
+            <xs:element name="PhysicalAddress" type="tns:PhysicalAddress" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PhoneNumber is one PhoneNumber
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="PhoneNumber">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Number"       type="tns:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Alternate"    type="tns:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PhoneNumberCollection is a sequence of PhoneNumber entries -->
+    <xs:complexType name="PhoneNumberCollection">
+        <xs:sequence>
+            <xs:element name="PhoneNumber" type="tns:PhoneNumber" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:Url is one Url
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Url">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Value"        type="tns:uri"     minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:UrlCollection is a sequence of Url entries -->
+    <xs:complexType name="UrlCollection">
+        <xs:sequence>
+            <xs:element name="Url" type="tns:Url" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:Certificate is one Certificate
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Certificate">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Value"        type="tns:binary"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="ThumbPrint"   type="tns:binary"   minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:CertificateCollection is a sequence of Certificate entries -->
+    <xs:complexType name="CertificateCollection">
+        <xs:sequence>
+            <xs:element name="Certificate" type="tns:Certificate" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:Name is one Name
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Name">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="FormattedName" type="tns:string"  minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Phonetic"     type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+
+            <xs:element name="Prefix"       type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Title"        type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="GivenName"    type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="FamilyName"   type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="MiddleName"   type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Generation"   type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Suffix"       type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="NickName"     type="tns:string"   minOccurs="0"  maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:Position is one Position
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="Position">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Organization" type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Role"         type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Company"      type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Department"   type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Office"       type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="JobTitle"     type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+            <xs:element name="Profession"   type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:PositionCollection is a sequence of Position entries -->
+    <xs:complexType name="PositionCollection">
+        <xs:sequence>
+            <xs:element name="Position" type="tns:Position" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:NameCollection is a sequence of Name entries -->
+    <xs:complexType name="NameCollection">
+        <xs:sequence>
+            <xs:element name="Name" type="tns:Name" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:IMAddress is one IMAddress
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="IMAddress">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Value"        type="tns:string"     minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Protocol"     type="tns:string"     minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:IMAddressCollection is a sequence of IMAddress entries -->
+    <xs:complexType name="IMAddressCollection">
+        <xs:sequence>
+            <xs:element name="IMAddress" type="tns:IMAddress" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:ContactID is one ContactID
+                with labels (and elements from other namespaces)
+                and entryAttributes -->
+    <xs:complexType name="ContactID">
+        <xs:all minOccurs="0" maxOccurs="1">
+            <xs:element name="Value"        type="tns:valueGUID"     minOccurs="0" maxOccurs="1" nillable="true"/>
+
+            <xs:element name="LabelCollection" type="tns:LabelCollection"   minOccurs="0" maxOccurs="1" nillable="true"/>
+            <xs:element name="Extended"        type="tns:Extended" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+        <xs:attributeGroup ref="tns:entryAttributes"/>
+    </xs:complexType>
+
+    <!-- tns:ContactIDCollection is a sequence of ContactID entries -->
+    <xs:complexType name="ContactIDCollection">
+        <xs:sequence>
+            <xs:element name="ContactID" type="tns:ContactID" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="tns:arrayElementAttributes"/>
+    </xs:complexType>
+
+    <!-- *****************************************-->
+    <!-- element definitions -->
+    <!-- *****************************************-->
+
+    <!-- tns:contact is the root element in instance documents -->
+    <xs:element name="contact">
+        <xs:complexType>
+            <xs:all>
+                <!-- tns:ContactIDCollection is a collection of 1 or more ContactID elements -->
+                <xs:element name="ContactIDCollection" type="tns:ContactIDCollection" minOccurs="1" maxOccurs="1" nillable="false">
+                    <!-- require unique element IDs on all ContactID entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_ContactIDCollection">
+                        <xs:selector xpath="tns:ContactID"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- top level elements without hierarchy/labels applied -->
+                <xs:element name="CreationDate" type="xs:dateTime"  minOccurs="1"   maxOccurs="1"/>
+
+                <xs:element name="Mailer"       type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+                <xs:element name="ProgID"       type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+                <xs:element name="Notes"        type="tns:string"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+
+                <xs:element name="Gender"       type="tns:gender"   minOccurs="0"   maxOccurs="1" nillable="true"/>
+
+                <!-- tns:NameCollection is a collection of 1 or more name elements -->
+                <xs:element name="NameCollection" type="tns:NameCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all names entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_NameCollection">
+                        <xs:selector xpath="tns:Name"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:PhotoCollection is a collection of 1 or more Photo elements -->
+                <xs:element name="PhotoCollection" type="tns:PhotoCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all Photo entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_PhotoCollection">
+                        <xs:selector xpath="tns:Photo"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:PersonCollection is a collection of 1 or more Person elements -->
+                <xs:element name="PersonCollection" type="tns:PersonCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all people entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_PersonCollection">
+                        <xs:selector xpath="tns:Person"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:PositionCollection is a collection of 1 or more Position elements -->
+                <xs:element name="PositionCollection" type="tns:PositionCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all Position entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_PositionCollection">
+                        <xs:selector xpath="tns:Position"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:dates is a collection of 1 or more Date elements -->
+                <xs:element name="DateCollection" type="tns:DateCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all Date entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_DateCollection">
+                        <xs:selector xpath="tns:Date"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:emailAddresses is a collection of 1 or more EmailAddress elements -->
+                <xs:element name="EmailAddressCollection" type="tns:EmailAddressCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all EmailAddress entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_EmailAddressCollection">
+                        <xs:selector xpath="tns:EmailAddress"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:phoneNumbers is a collection of 1 or more PhoneNumber elements -->
+                <xs:element name="PhoneNumberCollection" type="tns:PhoneNumberCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all PhoneNumber entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_PhoneNumberCollection">
+                        <xs:selector xpath="tns:PhoneNumber"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:PhysicalAddressCollection is a collection of 1 or more PhysicalAddress elements -->
+                <xs:element name="PhysicalAddressCollection" type="tns:PhysicalAddressCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all physicalAddresses entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_PhysicalAddressCollection">
+                        <xs:selector xpath="tns:PhysicalAddress"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:UrlCollection is a collection of 1 or more Url elements -->
+                <xs:element name="UrlCollection" type="tns:UrlCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all uri entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_UrlCollection">
+                        <xs:selector xpath="tns:Url"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:CertificateCollection is a collection of 1 or more Certificate elements -->
+                <xs:element name="CertificateCollection" type="tns:CertificateCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all Certificate entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_CertificateCollection">
+                        <xs:selector xpath="tns:Certificate"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- tns:IMAddressCollection is a collection of 1 or more IMAddress elements -->
+                <xs:element name="IMAddressCollection" type="tns:IMAddressCollection" minOccurs="0" maxOccurs="1" nillable="true">
+                    <!-- require unique element IDs on all IMAddress entries -->
+                    <xs:unique name="ElementID_Must_Be_Unique_IMAddressCollection">
+                        <xs:selector xpath="tns:IMAddress"/>
+                        <xs:field xpath="@ElementID"/>
+                    </xs:unique>
+                </xs:element>
+
+                <!-- elements from other namespaces are allowed here -->
+                <xs:element name="Extended" type="tns:Extended" nillable="true" minOccurs="1" maxOccurs="1" />
+
+            </xs:all>
+
+            <!-- c:Contact must have c:Version="1" attribute set -->
+            <xs:attribute name="Version"          type="xs:positiveInteger" fixed="1"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
