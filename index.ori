@@ -1,0 +1,177 @@
+<html>
+<head>
+<title>Windows Sync Client</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta name="copyright" content="c 2006-2009 Synrc Research Center">
+<meta name="keywords" 
+
+    "business process, investigation, expertise, prototyping,
+    software, software engineering,
+    research center,
+    sync, contacts, ldap, windows contacts, outlook, pim,
+    google contacts, gmail, yahoo! contacts, windows live,
+    microsoft live, hotmail" lang="en">
+
+<link href="../../../synrc.css" type="text/css" rel="stylesheet">
+
+</head>
+<body alink="midnightblue" bgcolor="white" link="midnightblue" text="darkslategray" vlink="midnightblue" 
+    topmargin=10 leftmargin=1 rightmargin=0 bottommargin=10 marginwidth=10 marginheight=10>
+
+<!-- Logo -->
+<div style="width:600px;margin-left:200px;height:78px;margin-top:20px;">
+    <div style="float:left; font-size: 21pt; font-family: Palatino Linotype;margin-top: 42px; ">
+        <b><font color="#0033cc">syn</font><font color="#ff3333">rc</font> research center</b>
+    </div>
+    <div style="float:right;margin-top: 4px; ">
+        <a href="../../../index.htm"><img src="../../../images/synrc.png" border="0"></a>
+    </div>
+</div>
+
+<hr size="1" width="100%">
+
+<!-- Menu -->
+<div style="width:600px;margin-left:200px;">
+    <table bgcolor="white" cellpadding="5" width="100%" >
+    <tbody bgcolor="#eeeeee"><tr height="50" align="center" valign="center">
+        <td width="12%"> <div class="menu"><a href="../../../index.htm">Sync</a></div> </td>
+        <td width="12%"> <div class="menu"><a href="../../../research.htm">Research</a></div> </td>
+        <td width="12%"> <div class="menu"><a href="../../../labs.htm">Labs</a></div> </td>
+        <td width="12%"> <div class="menu"><a href="../../../feedback.htm">Feedback</a></div> </td>
+        <td width="12%"> </td>
+        <td width="12%"> </td>
+        <td background="../../../images/dots1.jpg" width="12%"> </td>
+        <td background="../../../images/dots2.jpg" width="12%"> </td>
+    </tr></tbody></table>
+</div>
+
+
+<!-- Current Path and Language Select -->
+<div style="width:600px;margin-left:200px;height:16px;font-size:10pt;">
+    <!--div style="float:left;">
+        <a href="http://synrc.com/index.htm">synrc</a> &#8594;
+        <a href="http://synrc.com/active-development.htm">Activities</a> &#8594;
+        Contact Manager
+    </div-->
+    <div style="float:right;" align=right>
+        Sync Technologies
+    </div>
+
+</div>
+
+<div style="width:800px;margin-left:200px;float:left;margin-top:30px;">
+    <div style="width:196px;float:left;margin-right:6px;margin-top:20px;">
+        <img src="images/favicon.png" border=0>
+        <p><font size=2>Synrc Sync</font></p> 
+    </div>
+    <div style="width:596px;float:left;">
+    
+        <h3 style="color:blue;">Contacts Application</h3>
+
+        <p>Synrc Contacts Application for Vista is about organizing,
+        import/export, syncing your Address Books with Google Contacts,
+        Microsoft Outlook, NOKIA Phones, Windows Contacts local folder,
+        LDAP Directory, Yahoo! Contacts and Windows Live Contacts.</p>
+
+        <blockquote>
+        <p style="font-size:16pt;">
+	<a href="http://sync.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=25385">Download</a>
+
+ <sup><font color=blue>for Windows</font></sup></p>
+        </blockquote>
+
+		<p>Built on Windows Azure, Live Mesh and Microsoft .NET</p>
+
+		<p><img src="images/AzureLiveNET.jpg"></p>
+
+    </div>
+</div>
+
+<div style="width:600px;margin-left:400px;float:left;margin-bottom:50px;">
+
+    <p>Features:</p>
+
+        <p><ul>
+            <li>Puritan and Minimalistic interface</li>
+            <li>Symmetric synchronization (no master and slave)</li>
+            <li>Original <a href="doc/ReplicationProtocol.txt">Sync Replication Protocol</a></li>
+            <li>No data loss, duplicating or inconsistance</li>
+            <li>Designed for Multicore CPUs</li>
+            <li>Open architecture</li>
+            <li>No passwords stored</li>
+            <li>Instant full cross-field search</li>
+            <li>Supports Windows Sync Center</li>
+        </ul></p>
+
+    <h2>Puritan & Minimalistic interface</h2>
+
+    <p>Synrc Contacts is a "buddhist view" zen Application for Vista and Windows 7.
+    Its simplified one-button  design makes your life easy in terms of managing
+    personal contact information.</p>
+
+    <p><br><img src="images/collapsed.jpg"></p>
+
+    <h2>Symmetric synchronization</h2>
+
+    <p>You do not need specify what sync source is master or slave, which
+    one will be rewrited or not. The symmetric sync algorithm guarants you
+    that no data loss, contacts duplicating or data inconsistance accurse.
+	The application starts and loads all contacts from Windows Contacts
+	folder by default. That sync source sets up as default. Every sync
+	session performs with the default sync source.</p>
+
+    <h2>Instant full cross-fields search</h2>
+
+    <p>You can find contacts by any data stored within vCARD: phone,
+    e-mail, name, postal address, category, etc. Results are filtered
+    instantly by your typing.</p>
+
+    <img src="images/expanded.png">
+
+    <h2>Designed with multithreading in mind</h2>
+
+    <p>The sync Engine uses 7 threads to fetch, synchronize and
+    update sync source. That guarants you that your synchronization
+    will be finished as soon as possible and defines high responsiveness
+    and smoothness of application.</P>
+
+    <p><br><img src="images/loading.jpg"></p>
+
+    <h2>Security Issues</h2>
+
+    <p>No passwords are stored on your computer from your sync sources.
+    Passwords can be remembered only within a life of the application.
+    When the application shutdowns you have to retype passwords.
+    This guarants you that no password leek is possible.</p>
+
+    <p><br><img src="images/signin.jpg"></p>
+
+    <h2>Open architecture for developers</h2>
+
+    <p>The application is Open Source and you can implement your own
+    sync source provider for any storage you want be supported by
+    Synrc Contacts Application. You just need to define how to fetch
+    contacts from sync source, update, delete and add them. Most sync
+    source providers are implemented in one screen of code.</p>
+
+    <h2>Supports Windows Sync Center</h2>
+
+    <p>The application registers the Sync Center Partnership and now
+    you can sync all items in one place along with Windows Mobile
+    Devices and Offline Folders.</p>
+
+    <p><br><img src="images/synccenter.png"></p>
+
+</div>
+
+<div style="width:900px;margin-left:200px;text-align:center;margin-bottom:50px;">
+    <div style="width:596px;height:100px;float:left;">
+    <hr size=1>
+    <a href="../privacy.htm">Privacy Policy</a> | <a href="../feedback.htm">Feedback</a><br>
+    Copyright &copy; 2005&ndash;2011 <a href="../index.htm">
+    <font color="#0033cc">syn</font><font color="#ff3333">rc</font> Research Center, Inc.</a>
+    </div>
+</div>
+
+</body></html>
